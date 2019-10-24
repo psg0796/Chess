@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import Block from './block';
 import styled from 'styled-components';
+import * as R from 'ramda';
 
 const BoardContainer = styled.div`
   height: 500px;
@@ -20,17 +21,44 @@ const Row = styled.div`
 `;
 
 class Board extends Component {
+  state = {
+    chess: this.props.chess
+  };
+
+  getImage = (name) => {
+    if(R.equals(name, "")) {
+      return "";
+    } else {
+      return <img src={logo}/>;
+    }
+  }
+
+  getColor = (index) => {
+    const row = Math.floor(index / 8), col = index % 8;
+    if(row%2 === 0) {
+      return col%2 === 0? "white" : "black";
+    } else {
+      return col%2 === 1? "white": "black";
+    }
+  }
+
+  onClick = () => {
+  }
+
   render() {
+    const row = R.map(x => <Block
+      name={x.name}
+      position={x.position}
+      type={x.type}
+      color={this.getColor(x.position)}
+      img={this.getImage(x.name)}
+      onClick={this.onClick}/>, this.state.chess);
+
+    const board = R.map(x => <Row>{x}</Row>, R.splitEvery(8, row));
+
     return (
       <BoardContainer className={this.props.className}>
-        <Row>
-          <Block color="yellow" img={<img src={logo}/>}/>
-          <Block color="yellow" img={<img src={logo}/>}/>
-        </Row>
-        <Row>
-          <Block color="yellow" img={<img src={logo}/>}/>
-          <Block color="yellow" img={<img src={logo}/>}/>
-        </Row>
+        {board}
       </BoardContainer>
     );
   }

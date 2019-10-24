@@ -12,6 +12,11 @@ const BlockContainer = styled.div`
 `;
 
 class Block extends Component {
+  state = {
+    name: this.props.name,
+    position: this.props.position,
+    type: this.props.type
+  };
   render() {
     return (
         <BlockContainer color={this.props.color} className={this.props.className}>
