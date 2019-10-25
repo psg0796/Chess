@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import * as R from 'ramda';
 import * as U from './utility';
 
-const HighlightedBlack = "blue", Black = "black", HighlightedWhite = "red", White = "white";
+const HighlightedBlack = "#4a4747", Black = "black", HighlightedWhite = "#c4c4c4", White = "white";
 
 const BoardContainer = styled.div`
   height: 500px;
@@ -63,7 +63,7 @@ class Board extends Component {
 
   onClick = (x) => {
     if(this.state.isClicked) {
-      if(U.isValid(x) === true) {
+      if(U.isValid(x, R.clone(this.state.highlight))) {
         let newChess = R.clone(this.state.chess);
         const newBlockState = {
           name: this.state.pastBlockSelected.name,
