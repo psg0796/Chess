@@ -7,6 +7,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import * as R from 'ramda';
 import * as U from './utility';
 
+const HighlightedBlack = "blue", Black = "black", HighlightedWhite = "red", White = "white";
+
 const BoardContainer = styled.div`
   height: 500px;
   width: 500px;
@@ -27,7 +29,8 @@ class Board extends Component {
   state = {
     chess: this.props.chess,
     isClicked:false,
-    pastBlockSelected: {}
+    pastBlockSelected: {},
+    highlight: [],
   };
 
   getImage = (name, type) => {
@@ -39,11 +42,12 @@ class Board extends Component {
   }
 
   getColor = (index) => {
+    const highlight = this.state.highlight;
     const row = Math.floor(index / 8), col = index % 8;
     if(row%2 === 0) {
-      return col%2 === 0? "white" : "black";
+      return col%2 === 0? R.contains(index, highlight) && HighlightedWhite || White : R.contains(index, highlight) && HighlightedBlack || Black;
     } else {
-      return col%2 === 1? "white": "black";
+      return col%2 === 1? R.contains(index, highlight) && HighlightedWhite || White : R.contains(index, highlight) && HighlightedBlack || Black;
     }
   }
 
@@ -58,9 +62,9 @@ class Board extends Component {
   }
 
   onClick = (x) => {
-    let newChess = R.clone(this.state.chess);
     if(this.state.isClicked) {
       if(U.isValid(x) === true) {
+        let newChess = R.clone(this.state.chess);
         const newBlockState = {
           name: this.state.pastBlockSelected.name,
           position: x.position,
@@ -69,16 +73,28 @@ class Board extends Component {
         newChess = this.erase(x.position, R.clone(newChess));
         newChess = this.set(x.position, newBlockState, R.clone(newChess));
         newChess = this.erase(this.state.pastBlockSelected.position, R.clone(newChess));
+        
+        this.setState({
+          chess: newChess,
+          isClicked: !this.state.isClicked,
+          pastBlockSelected: {},
+          highlight: []
+        })
       } else {
         toast.error("Sorry! Wrong Move :-(!");
       }
+    } else {
+      const chess = R.clone(this.state.chess);
+      if(U.hasPiece(x, R.clone(chess))) {
+        const highlight = U.getPossibleMoves(x, R.clone(chess));
+        
+        this.setState({
+          isClicked: !this.state.isClicked,
+          pastBlockSelected: x,
+          highlight: highlight
+        })
+      }
     }
-
-    this.setState({
-      chess: newChess,
-      pastBlockSelected: x,
-      isClicked: !this.state.isClicked
-    });
   }
 
   render() {
