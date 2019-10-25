@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import * as  R from 'ramda';
 
 const BlockContainer = styled.div`
   width: 100%;
@@ -12,11 +13,23 @@ const BlockContainer = styled.div`
 `;
 
 class Block extends Component {
-  state = {
-    name: this.props.name,
-    position: this.props.position,
-    type: this.props.type
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: this.props.name,
+      position: this.props.position,
+      type: this.props.type
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(!R.equals(nextProps, this.props)) {
+      this.setState({
+        name: nextProps.name,
+        type: nextProps.type
+      })
+    }
+  }
 
   onClick = () => {
     this.props.onClick(this.state);

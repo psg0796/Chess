@@ -22,7 +22,7 @@ class App extends Component {
       if(x < 16) {
         return  x < 8 ? ({name: pieces[x], position: x, type: 0}) : ({name: "P", position: x, type: 0});
       } else if(x > 47) {
-        return  x < 56 ? ({name: "P", position: x, type: 1}) : ({name: pieces[63 - x], position: x, type: 0});
+        return  x < 56 ? ({name: "P", position: x, type: 1}) : ({name: pieces[63 - x], position: x, type: 1});
       } else {
         return ({name: "", position: x, type: 2});
       }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import Logo from './logo';
 import Block from './block';
 import styled from 'styled-components';
 import { ToastContainer, toast } from 'react-toastify';
@@ -30,11 +30,11 @@ class Board extends Component {
     pastBlockSelected: {}
   };
 
-  getImage = (name) => {
+  getImage = (name, type) => {
     if(R.equals(name, "")) {
       return "";
     } else {
-      return <img src={logo}/>;
+      return <Logo fill={(type === 0 && "red") || (type === 1 && "blue")}/>;
     }
   }
 
@@ -47,28 +47,35 @@ class Board extends Component {
     }
   }
 
-  move = (x) => {
-    let blockStateAfterMove = R.clone(this.state.pastBlockSelected), currentBlockStateAfterMove = R.clone(this.state.pastBlockSelected);
-    blockStateAfterMove.position = x.position;
-    currentBlockStateAfterMove.name = "";
-    currentBlockStateAfterMove.type = "2";
-    let newChess = R.over(R.lensIndex(x.position), x => blockStateAfterMove, this.state.chess);
-    newChess = R.over(R.lensIndex(this.state.pastBlockSelected.position), x => currentBlockStateAfterMove, newChess);
+  erase = (x,chess) => {
+    const newChess = R.update(x, {name:"", position: x, type: 2}, chess);
+    return newChess
+  }
 
-    this.setState({
-      chess: newChess
-    });
+  set = (x, newState, chess) => {
+    const newChess = R.update(x, newState, chess);
+    return newChess;
   }
 
   onClick = (x) => {
+    let newChess = R.clone(this.state.chess);
     if(this.state.isClicked) {
       if(U.isValid(x) === true) {
-        this.move(x);
+        const newBlockState = {
+          name: this.state.pastBlockSelected.name,
+          position: x.position,
+          type: this.state.pastBlockSelected.type
+        };
+        newChess = this.erase(x.position, R.clone(newChess));
+        newChess = this.set(x.position, newBlockState, R.clone(newChess));
+        newChess = this.erase(this.state.pastBlockSelected.position, R.clone(newChess));
       } else {
         toast.error("Sorry! Wrong Move :-(!");
       }
     }
+
     this.setState({
+      chess: newChess,
       pastBlockSelected: x,
       isClicked: !this.state.isClicked
     });
@@ -80,7 +87,7 @@ class Board extends Component {
       position={x.position}
       type={x.type}
       color={this.getColor(x.position)}
-      img={this.getImage(x.name)}
+      img={this.getImage(x.name, x.type)}
       onClick={this.onClick}/>, this.state.chess);
 
     const board = R.map(x => <Row>{x}</Row>, R.splitEvery(8, row));
