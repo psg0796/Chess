@@ -3,7 +3,7 @@ export function isValid(x) {
 }
 
 export function hasPiece(x, chess) {
-    return true;
+    return x.name !== "";
 }
 
 export function getPossibleMoves(x, chess) {

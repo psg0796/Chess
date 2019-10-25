@@ -71,8 +71,8 @@ class Board extends Component {
           type: this.state.pastBlockSelected.type
         };
         newChess = this.erase(x.position, R.clone(newChess));
-        newChess = this.set(x.position, newBlockState, R.clone(newChess));
         newChess = this.erase(this.state.pastBlockSelected.position, R.clone(newChess));
+        newChess = this.set(x.position, newBlockState, R.clone(newChess));
         
         this.setState({
           chess: newChess,
