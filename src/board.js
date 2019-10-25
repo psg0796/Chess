@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import Block from './block';
 import styled from 'styled-components';
 import * as R from 'ramda';
+import * as U from './utility';
 
 const BoardContainer = styled.div`
   height: 500px;
@@ -22,7 +23,9 @@ const Row = styled.div`
 
 class Board extends Component {
   state = {
-    chess: this.props.chess
+    chess: this.props.chess,
+    isClicked:false,
+    pastBlockSelected: {}
   };
 
   getImage = (name) => {
@@ -42,7 +45,31 @@ class Board extends Component {
     }
   }
 
-  onClick = () => {
+  move = (x) => {
+    let blockStateAfterMove = R.clone(this.state.pastBlockSelected), currentBlockStateAfterMove = R.clone(this.state.pastBlockSelected);
+    blockStateAfterMove.position = x.position;
+    currentBlockStateAfterMove.name = "";
+    currentBlockStateAfterMove.type = "2";
+    let newChess = R.over(R.lensIndex(x.position), x => blockStateAfterMove, this.state.chess);
+    newChess = R.over(R.lensIndex(this.state.pastBlockSelected.position), x => currentBlockStateAfterMove, newChess);
+
+    this.setState({
+      chess: newChess
+    });
+  }
+
+  onClick = (x) => {
+    if(this.state.isClicked) {
+      if(U.isValid(x) === true) {
+        this.move(x);
+      } else {
+        console.log("wrong move!");
+      }
+    }
+    this.setState({
+      pastBlockSelected: x,
+      isClicked: !this.state.isClicked
+    });
   }
 
   render() {

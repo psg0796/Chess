@@ -17,9 +17,18 @@ class Block extends Component {
     position: this.props.position,
     type: this.props.type
   };
+
+  onClick = () => {
+    this.props.onClick(this.state);
+  }
+
   render() {
     return (
-        <BlockContainer color={this.props.color} className={this.props.className}>
+        <BlockContainer
+          color={this.props.color}
+          className={this.props.className}
+          onClick={this.onClick}
+        >
           {this.props.img}
         </BlockContainer>
     );
