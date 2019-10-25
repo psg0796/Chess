@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import Block from './block';
 import styled from 'styled-components';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import * as R from 'ramda';
 import * as U from './utility';
 
@@ -63,7 +65,7 @@ class Board extends Component {
       if(U.isValid(x) === true) {
         this.move(x);
       } else {
-        console.log("wrong move!");
+        toast.error("Sorry! Wrong Move :-(!");
       }
     }
     this.setState({
@@ -84,7 +86,10 @@ class Board extends Component {
     const board = R.map(x => <Row>{x}</Row>, R.splitEvery(8, row));
 
     return (
-      <BoardContainer className={this.props.className}>
+      <BoardContainer
+        className={this.props.className}
+      >
+        <ToastContainer />
         {board}
       </BoardContainer>
     );
